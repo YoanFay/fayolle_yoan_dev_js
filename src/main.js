@@ -8,43 +8,47 @@ const appPort = 3000
 const data = await readFile('./public/countries.json');
 const json = JSON.parse(data);
 
-function normalVersion() {
+function normalVersion(ccn3 = null) {
 
     let countries = []
 
     for(let country in json){
-        countries.push(
-            {
-            'name': json[country].name.common??null,
-            'cca2': json[country].cca2??null,
-            'cca3': json[country].cca3??null,
-            'currencies': json[country].currencies??null,
-            'languages': json[country].languages??null,
-            'flag': json[country].flag??null,
-            'capital': json[country].capital??null,
-            'population': json[country].population??null,
-            'continents': json[country].continents??null,
-            }
-        )        
+        if(!ccn3 || ccn3 == json[country].ccn3){
+            countries.push(
+                {
+                'name': json[country].name.common??null,
+                'cca2': json[country].cca2??null,
+                'cca3': json[country].cca3??null,
+                'currencies': json[country].currencies??null,
+                'languages': json[country].languages??null,
+                'flag': json[country].flag??null,
+                'capital': json[country].capital??null,
+                'population': json[country].population??null,
+                'continents': json[country].continents??null,
+                }
+            )   
+        }     
     }
 
     return countries
     
 }
 
-function shortVersion() {
+function shortVersion(ccn3 = null) {
 
     let countries = []
 
     for(let country in json){
-        countries.push(
-            {
-            'name': json[country].name.common??null,
-            'cca2': json[country].cca2??null,
-            'cca3': json[country].cca3??null,
-            'flag': json[country].flag??null,
-            }
-        )        
+        if(!ccn3 || ccn3 == json[country].ccn3){
+            countries.push(
+                {
+                'name': json[country].name.common??null,
+                'cca2': json[country].cca2??null,
+                'cca3': json[country].cca3??null,
+                'flag': json[country].flag??null,
+                }
+            )   
+        }     
     }
 
     return countries
@@ -57,13 +61,13 @@ app.get('/', (req, res) => {
     
 })
 
-app.get('/:version', (req, res) => {
+app.get('/:version{/:ccn3}', (req, res) => {
     if(req.params.version == "full"){
         res.send(json)
     }else if(req.params.version == "short"){
-        res.send(shortVersion())
+        res.send(shortVersion(req.params.ccn3))
     }else if(req.params.version == "normal"){
-        res.send(shortVersion())
+        res.send(normalVersion(req.params.ccn3))
     }
 })
 
